@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>50 Repositories Celebration | nden14800</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    
+    <!-- Highcharts -->
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+
+    <style>
+        /* =========================================
+           CSS Variables & Themes
+           ========================================= */
+        :root {
+            --font-main: 'Roboto', sans-serif;
+            --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            
+            /* Light Theme Defaults */
+            --bg-color: #f0f4f8;
+            --text-main: #2d3436;
+            --text-sub: #636e72;
+            --glass-bg: rgba(255, 255, 255, 0.4);
+            --glass-border: rgba(255, 255, 255, 0.6);
+            --card-bg: rgba(255, 255, 255, 0.75);
+            --card-hover: rgba(255, 255, 255, 0.95);
+            --accent: #0984e3;
+            --accent-glow: rgba(9, 132, 227, 0.3);
+            --line-color: #0984e3;
+            --scroll-track: rgba(0, 0, 0, 0.05);
+            --scroll-thumb: rgba(9, 132, 227, 0.5);
+            --interval-text: #0984e3;
+            
+            /* Highcharts Colors (Light) */
+            --chart-text: #2d3436;
+            --chart-grid: rgba(0,0,0,0.1);
+
+            /* Gradient Orbs */
+            --blob-1: #81ecec;
+            --blob-2: #74b9ff;
+            --blob-3: #a29bfe;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-color: #121212;
+                --text-main: #dfe6e9;
+                --text-sub: #b2bec3;
+                --glass-bg: rgba(30, 30, 40, 0.4);
+                --glass-border: rgba(255, 255, 255, 0.1);
+                --card-bg: rgba(35, 35, 45, 0.8);
+                --card-hover: rgba(50, 50, 60, 0.95);
+                --accent: #00cec9;
+                --accent-glow: rgba(0, 206, 201, 0.3);
+                --line-color: #00cec9;
+                --scroll-track: rgba(255, 255, 255, 0.05);
+                --scroll-thumb: rgba(0, 206, 201, 0.5);
+                --interval-text: #81ecec;
+                
+                /* Highcharts Colors (Dark) */
+                --chart-text: #dfe6e9;
+                --chart-grid: rgba(255,255,255,0.1);
+                
+                /* Gradient Orbs Dark */
+                --blob-1: #2d3436;
+                --blob-2: #0984e3;
+                --blob-3: #6c5ce7;
+            }
+        }
+
+        /* =========================================
+           Global Styles
+           ========================================= */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Background Animation */
+        .background-blobs {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.5;
+            animation: float 25s infinite alternate;
+        }
+
+        .blob:nth-child(1) { top: -10%; left: -10%; width: 50vw; height: 50vw; background: var(--blob-1); }
+        .blob:nth-child(2) { bottom: -10%; right: -10%; width: 50vw; height: 50vw; background: var(--blob-2); animation-delay: -5s; }
+        .blob:nth-child(3) { top: 40%; left: 40%; width: 40vw; height: 40vw; background: var(--blob-3); animation-delay: -10s; }
+
+        @keyframes float {
+            from { transform: translate(0, 0) scale(1); }
+            to { transform: translate(50px, 30px) scale(1.1); }
+        }
+
+        /* Glassmorphism Helper */
+        .glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.1);
+        }
+
+        /* =========================================
+           Header Section
+           ========================================= */
+        header {
+            padding: 40px 20px 10px 20px;
+            text-align: center;
+            flex-shrink: 0;
+            z-index: 10;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .profile-container {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        .profile-img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 3px solid var(--accent);
+            padding: 3px;
+            object-fit: cover;
+            box-shadow: 0 0 20px var(--accent-glow);
+            background: var(--bg-color);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin: 10px 0 5px 0;
+            background: linear-gradient(90deg, var(--text-main), var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Speech Bubble Message */
+        .message-bubble {
+            position: relative;
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 20px;
+            margin-top: 20px;
+            border: 1px solid var(--glass-border);
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: left;
+        }
+        
+        .message-bubble::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 0 10px 10px 10px;
+            border-style: solid;
+            border-color: transparent transparent var(--glass-border) transparent;
+        }
+        .message-bubble::after {
+            content: '';
+            position: absolute;
+            top: -9px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 0 10px 10px 10px;
+            border-style: solid;
+            border-color: transparent transparent var(--card-bg) transparent;
+        }
+
+        .message-title {
+            font-weight: 700;
+            color: var(--accent);
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .message-body {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: var(--text-main);
+        }
+
+        .stats-badge {
+            display: inline-block;
+            background: var(--accent);
+            color: #fff;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            margin-left: auto;
+        }
+
+        /* =========================================
+           Analytics Section (Highcharts)
+           ========================================= */
+        #analytics-section {
+            width: 95%;
+            max-width: 1400px;
+            margin: 40px auto 0 auto;
+            padding: 0 20px;
+            display: none; /* Shown after data loads */
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+            margin-top: 20px;
+        }
+        
+        @media (min-width: 900px) {
+            .charts-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .full-width {
+                grid-column: 1 / -1;
+            }
+        }
+
+        .chart-container {
+            padding: 20px;
+            min-height: 400px;
+            border-radius: 20px;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: var(--text-main);
+            font-weight: 700;
+        }
+
+        /* =========================================
+           Horizontal Timeline
+           ========================================= */
+        main {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            width: 100%;
+            overflow: hidden;
+            padding: 60px 0;
+            position: relative;
+        }
+
+        .timeline-scroll-area {
+            width: 100%;
+            height: 100%;
+            overflow-x: auto;
+            overflow-y: hidden;
+            padding: 0 20px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--scroll-thumb) var(--scroll-track);
+            cursor: grab;
+            display: flex;
+            align-items: center;
+        }
+
+        .timeline-scroll-area:active {
+            cursor: grabbing;
+        }
+
+        .timeline-scroll-area::-webkit-scrollbar {
+            height: 10px;
+        }
+        .timeline-scroll-area::-webkit-scrollbar-track {
+            background: var(--scroll-track);
+            border-radius: 5px;
+        }
+        .timeline-scroll-area::-webkit-scrollbar-thumb {
+            background: var(--scroll-thumb);
+            border-radius: 5px;
+        }
+
+        .timeline-track {
+            position: relative;
+            display: flex;
+            align-items: center;
+            height: 600px;
+            min-width: max-content;
+            padding: 0 100px;
+        }
+
+        /* Central Line */
+        .timeline-line {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--line-color);
+            border-radius: 2px;
+            opacity: 0.5;
+            z-index: 0;
+        }
+
+        /* Timeline Item */
+        .timeline-item {
+            position: relative;
+            width: 340px; 
+            height: 100%;
+            flex-shrink: 0;
+            display: flex;
+            justify-content: center;
+            opacity: 0;
+            transform: translateX(30px);
+            animation: slideIn 0.5s forwards;
+            pointer-events: none;
+        }
+
+        @keyframes slideIn {
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        /* Central Dot */
+        .timeline-dot {
+            width: 14px;
+            height: 14px;
+            background: var(--bg-color);
+            border: 3px solid var(--accent);
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            transition: var(--transition);
+        }
+
+        .timeline-item:hover .timeline-dot {
+            background: var(--accent);
+            transform: translate(-50%, -50%) scale(1.4);
+            box-shadow: 0 0 15px var(--accent);
+        }
+
+        /* Axis Date */
+        .axis-date {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, 20px);
+            font-size: 0.75rem;
+            color: var(--text-sub);
+            font-weight: 500;
+            white-space: nowrap;
+            letter-spacing: 0.5px;
+        }
+
+        /* Interval Info */
+        .interval-display {
+            position: absolute;
+            top: 50%;
+            left: calc(50% + 15px);
+            width: calc(100% - 30px);
+            transform: translateY(-50%);
+            text-align: center;
+            font-size: 0.7rem;
+            color: var(--interval-text);
+            font-weight: 700;
+            opacity: 0.7;
+            white-space: nowrap;
+        }
+        .interval-display::after {
+            content: '→';
+            display: inline-block;
+            margin-left: 5px;
+            font-size: 0.8rem;
+        }
+        .interval-display:empty {
+            display: none;
+        }
+
+        /* Connector Line */
+        .connector {
+            position: absolute;
+            left: 50%;
+            width: 2px;
+            background: var(--line-color);
+            opacity: 0.5;
+            transform: translateX(-50%);
+            z-index: 1;
+        }
+
+        /* Card Wrapper */
+        .repo-card {
+            position: absolute;
+            width: 260px;
+            max-height: 200px;
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--glass-border);
+            padding: 15px;
+            border-radius: 12px;
+            text-decoration: none;
+            color: inherit;
+            transition: var(--transition);
+            z-index: 5;
+            pointer-events: auto;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            overflow: hidden;
+        }
+
+        .repo-card:hover {
+            transform: scale(1.05);
+            background: var(--card-hover);
+            border-color: var(--accent);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            z-index: 20;
+        }
+
+        /* Positioning Logic */
+        .timeline-item.up .repo-card {
+            bottom: 50%;
+            margin-bottom: 45px;
+        }
+        .timeline-item.up .connector {
+            top: auto;
+            bottom: 50%;
+            height: 45px;
+        }
+
+        .timeline-item.down .repo-card {
+            top: 50%;
+            margin-top: 55px;
+        }
+        .timeline-item.down .connector {
+            top: 50%;
+            bottom: auto;
+            height: 55px;
+        }
+
+        /* Card Content */
+        .date-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        .repo-name {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .repo-desc {
+            font-size: 0.8rem;
+            color: var(--text-sub);
+            margin-bottom: 10px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            line-height: 1.4;
+        }
+
+        .card-footer {
+            margin-top: auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.7rem;
+            color: var(--text-sub);
+            border-top: 1px solid rgba(125,125,125,0.1);
+            padding-top: 8px;
+        }
+
+        .lang-badge {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .lang-color {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+        }
+
+        /* Start/Now Labels */
+        .timeline-label {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.2rem;
+            font-weight: 900;
+            color: var(--accent);
+            background: var(--bg-color);
+            padding: 5px 15px;
+            border-radius: 20px;
+            border: 2px solid var(--accent);
+            z-index: 5;
+        }
+        .label-start { left: 10px; }
+        .label-now { right: 10px; }
+
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.2rem;
+            color: var(--text-sub);
+            animation: pulse 1.5s infinite;
+        }
+        @keyframes pulse { 0%{opacity:0.5;} 50%{opacity:1;} 100%{opacity:0.5;} }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 0.8rem;
+            color: var(--text-sub);
+            flex-shrink: 0;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Background -->
+    <div class="background-blobs">
+        <div class="blob"></div>
+        <div class="blob"></div>
+        <div class="blob"></div>
+    </div>
+
+    <!-- Header / Message -->
+    <header>
+        <div class="container">
+            <div id="loading-profile">Loading Profile...</div>
+            <div id="profile-content" style="display: none;">
+                <div class="profile-container">
+                    <img src="" alt="Avatar" class="profile-img" id="user-avatar">
+                </div>
+                <h1>nden14800</h1>
+                
+                <div class="message-bubble glass">
+                    <div class="message-title">
+                        <span>🎉 50 Repositories Achieved!</span>
+                        <span class="stats-badge" id="repo-count-badge">50+</span>
+                    </div>
+                    <div class="message-body">
+                        「皆さん、こんにちは！nden14800です。<br>
+                        いつも私のGitHubを見てくださり、本当にありがとうございます。<br>
+                        おかげさまで、ついに<strong>リポジトリ数が50個を突破</strong>しました！<br>
+                        <br>
+                        以下には私の開発履歴の分析グラフと、<strong>"START" から "NOW"</strong> へのタイムラインを用意しました。<br>
+                        これからもコードを通じて新しい価値を作り続けていきます！」
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Analytics Section -->
+    <section id="analytics-section">
+        <h2 class="section-title">Development Activity</h2>
+        <div class="charts-grid">
+            <div class="glass chart-container full-width" id="chart-accumulated"></div>
+            <div class="glass chart-container" id="chart-monthly"></div>
+            <div class="glass chart-container" id="chart-weekly"></div>
+        </div>
+    </section>
+
+    <!-- Horizontal Timeline -->
+    <main>
+        <div id="loading-timeline" class="loading">Building History Timeline...</div>
+        
+        <div class="timeline-scroll-area" id="scroll-area">
+            <div class="timeline-track" id="timeline-track">
+                <div class="timeline-line"></div>
+                <div class="timeline-label label-start">START</div>
+                <!-- Items injected here -->
+                <div class="timeline-label label-now">NOW</div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        Created by nden14800 • Thank you for your support!
+    </footer>
+
+    <script>
+        // Config
+        const USERNAME = 'nden14800';
+        const REPOS_URL = `https://api.github.com/users/${USERNAME}/repos?sort=created&direction=asc&per_page=100`;
+        const USER_URL = `https://api.github.com/users/${USERNAME}`;
+
+        // Elements
+        const loadingProfile = document.getElementById('loading-profile');
+        const profileContent = document.getElementById('profile-content');
+        const analyticsSection = document.getElementById('analytics-section');
+        const timelineTrack = document.getElementById('timeline-track');
+        const loadingTimeline = document.getElementById('loading-timeline');
+        const scrollArea = document.getElementById('scroll-area');
+
+        // Lang Colors
+        const langColors = {
+            'JavaScript': '#f1e05a', 'TypeScript': '#2b7489', 'HTML': '#e34c26',
+            'CSS': '#563d7c', 'Python': '#3572A5', 'Java': '#b07219',
+            'C++': '#f34b7d', 'C#': '#178600', 'PHP': '#4F5D95',
+            'Vue': '#2c3e50', 'React': '#61dafb', 'Dart': '#00B4AB',
+            'Swift': '#ffac45', 'Shell': '#89e051'
+        };
+
+        // Date Formatters with JST
+        const formatDateFullJST = (str) => {
+            const d = new Date(str);
+            // Format to YYYY.MM.DD HH:mm (JST)
+            return d.toLocaleString('ja-JP', {
+                timeZone: 'Asia/Tokyo',
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            }).replace(/\//g, '.');
+        };
+
+        const formatAxisDate = (str) => {
+            const d = new Date(str);
+            return `${d.getFullYear()}.${(d.getMonth()+1).toString().padStart(2, '0')}`;
+        };
+
+        // Helper: Calculate duration between dates (Fix: Treat same day as 0 days)
+        const getDurationText = (d1Str, d2Str) => {
+            const d1 = new Date(d1Str);
+            const d2 = new Date(d2Str);
+            
+            // Set time to midnight to compare dates only
+            const date1 = new Date(d1.getFullYear(), d1.getMonth(), d1.getDate());
+            const date2 = new Date(d2.getFullYear(), d2.getMonth(), d2.getDate());
+
+            const diffTime = Math.abs(date2 - date1);
+            const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24)); 
+            
+            if(diffDays === 0) return "0日 (同日)";
+            if(diffDays < 30) return `${diffDays}日後`;
+            if(diffDays < 365) {
+                const months = Math.floor(diffDays / 30);
+                return `約${months}ヶ月後`;
+            }
+            const years = (diffDays / 365).toFixed(1);
+            return `約${years}年後`;
+        };
+
+        // --- Highcharts Setup ---
+        function initCharts(repos) {
+            // Theme detection
+            const isDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const textColor = isDark ? '#dfe6e9' : '#2d3436';
+            const gridColor = isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
+            const accentColor = isDark ? '#00cec9' : '#0984e3';
+
+            // Common Options (Set timezone to JST: UTC+9 = -540 mins)
+            Highcharts.setOptions({
+                time: {
+                    timezoneOffset: -540 // JST
+                },
+                chart: {
+                    backgroundColor: 'transparent',
+                    style: { fontFamily: "'Roboto', sans-serif" }
+                },
+                title: { style: { color: textColor, fontSize: '18px' } },
+                legend: { itemStyle: { color: textColor } },
+                xAxis: {
+                    labels: { style: { color: textColor } },
+                    lineColor: gridColor,
+                    tickColor: gridColor
+                },
+                yAxis: {
+                    labels: { style: { color: textColor } },
+                    gridLineColor: gridColor,
+                    title: { style: { color: textColor } }
+                },
+                credits: { enabled: false }
+            });
+
+            // 1. Accumulated Repositories Over Time
+            const accumulatedData = repos.map((r, i) => {
+                return [new Date(r.created_at).getTime(), i + 1];
+            });
+
+            Highcharts.chart('chart-accumulated', {
+                chart: { type: 'area' },
+                title: { text: 'Total Repositories (Cumulative)' },
+                xAxis: { type: 'datetime' },
+                yAxis: { title: { text: 'Count' } },
+                plotOptions: {
+                    area: {
+                        fillColor: {
+                            linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+                            stops: [
+                                [0, Highcharts.color(accentColor).setOpacity(0.5).get('rgba')],
+                                [1, Highcharts.color(accentColor).setOpacity(0).get('rgba')]
+                            ]
+                        },
+                        lineColor: accentColor,
+                        lineWidth: 3,
+                        marker: { radius: 4 }
+                    }
+                },
+                series: [{
+                    name: 'Repositories',
+                    data: accumulatedData,
+                    color: accentColor
+                }]
+            });
+
+            // 2. Monthly Repositories
+            const monthlyCounts = {};
+            repos.forEach(r => {
+                const d = new Date(r.created_at);
+                const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+                monthlyCounts[key] = (monthlyCounts[key] || 0) + 1;
+            });
+            const monthlyData = Object.keys(monthlyCounts).sort().map(k => [k, monthlyCounts[k]]);
+
+            Highcharts.chart('chart-monthly', {
+                chart: { type: 'column' },
+                title: { text: 'Repos Created per Month' },
+                xAxis: { type: 'category' },
+                yAxis: { title: { text: 'Count' } },
+                series: [{
+                    name: 'Monthly Created',
+                    data: monthlyData,
+                    color: accentColor
+                }]
+            });
+
+            // 3. Weekly Repositories (Date Range: YYYY/MM/DD ~ YYYY/MM/DD)
+            const getWeekRangeKey = (dateStr) => {
+                const d = new Date(dateStr);
+                // Reset time to start of day
+                d.setHours(0,0,0,0);
+                // Get day of week (0=Sun, 1=Mon...)
+                const day = d.getDay();
+                // Set to Sunday of that week
+                const diff = d.getDate() - day;
+                const start = new Date(d.setDate(diff));
+                // End is Start + 6 days
+                const end = new Date(new Date(start).setDate(start.getDate() + 6));
+                
+                // Format helper
+                const fmt = (dt) => `${dt.getFullYear()}/${dt.getMonth()+1}/${dt.getDate()}`;
+                
+                return {
+                    label: `${fmt(start)} ~ ${fmt(end)}`,
+                    ts: start.getTime() // used for sorting
+                };
+            };
+            
+            // Collect data
+            const weeklyGroups = {};
+            repos.forEach(r => {
+                const range = getWeekRangeKey(r.created_at);
+                if (!weeklyGroups[range.ts]) {
+                    weeklyGroups[range.ts] = { label: range.label, count: 0 };
+                }
+                weeklyGroups[range.ts].count++;
+            });
+            
+            // Sort by timestamp and format for Highcharts
+            const weeklyData = Object.keys(weeklyGroups)
+                .sort((a, b) => a - b)
+                .map(ts => [weeklyGroups[ts].label, weeklyGroups[ts].count]);
+
+            Highcharts.chart('chart-weekly', {
+                chart: { type: 'column' },
+                title: { text: 'Repos Created per Week' },
+                xAxis: { 
+                    type: 'category', 
+                    labels: { rotation: -45 }
+                },
+                yAxis: { title: { text: 'Count' }, allowDecimals: false },
+                series: [{
+                    name: 'Weekly Created',
+                    data: weeklyData,
+                    color: '#a29bfe'
+                }]
+            });
+        }
+
+        // 1. Load User
+        async function loadUser() {
+            try {
+                const res = await fetch(USER_URL);
+                if(!res.ok) throw new Error('User not found');
+                const data = await res.json();
+                
+                document.getElementById('user-avatar').src = data.avatar_url;
+                document.getElementById('repo-count-badge').textContent = data.public_repos + " Repos";
+                
+                loadingProfile.style.display = 'none';
+                profileContent.style.display = 'block';
+                profileContent.style.animation = "slideIn 0.5s ease-out";
+            } catch(e) {
+                loadingProfile.textContent = "Error: " + e.message;
+            }
+        }
+
+        // 2. Load Timeline & Charts
+        async function loadTimeline() {
+            try {
+                const res = await fetch(REPOS_URL);
+                if(!res.ok) throw new Error('Repos not found');
+                const repos = await res.json();
+
+                loadingTimeline.style.display = 'none';
+                
+                if(repos.length === 0) return;
+
+                // Init Highcharts
+                analyticsSection.style.display = 'block';
+                initCharts(repos);
+
+                // Build Timeline
+                const endLabel = document.querySelector('.label-now');
+                repos.forEach((repo, i) => {
+                    const item = document.createElement('div');
+                    const positionClass = i % 2 === 0 ? 'up' : 'down';
+                    item.className = `timeline-item ${positionClass}`;
+                    item.style.animationDelay = `${i * 0.05}s`;
+
+                    const color = langColors[repo.language] || '#aaa';
+                    const desc = repo.description || 'No description.';
+                    
+                    // Calc duration
+                    let intervalText = "";
+                    if (i < repos.length - 1) {
+                        intervalText = getDurationText(repo.created_at, repos[i+1].created_at);
+                    }
+
+                    item.innerHTML = `
+                        <div class="connector"></div>
+                        <div class="timeline-dot"></div>
+                        <div class="axis-date">${formatAxisDate(repo.created_at)}</div>
+                        <div class="interval-display">${intervalText}</div>
+                        
+                        <a href="${repo.html_url}" target="_blank" class="repo-card">
+                            <span class="date-label">${formatDateFullJST(repo.created_at)}</span>
+                            <div class="repo-name">${repo.name}</div>
+                            <div class="repo-desc">${desc}</div>
+                            <div class="card-footer">
+                                <div class="lang-badge">
+                                    <span class="lang-color" style="background:${color}"></span>
+                                    ${repo.language || '-'}
+                                </div>
+                                <div>★ ${repo.stargazers_count}</div>
+                            </div>
+                        </a>
+                    `;
+                    
+                    timelineTrack.insertBefore(item, endLabel);
+                });
+
+                setTimeout(() => {
+                    scrollArea.scrollLeft = 0;
+                }, 100);
+
+            } catch(e) {
+                loadingTimeline.textContent = "Error: " + e.message;
+            }
+        }
+
+        // Mouse Drag Scrolling
+        let isDown = false;
+        let startX;
+        let scrollLeft;
+
+        scrollArea.addEventListener('mousedown', (e) => {
+            isDown = true;
+            scrollArea.style.cursor = 'grabbing';
+            startX = e.pageX - scrollArea.offsetLeft;
+            scrollLeft = scrollArea.scrollLeft;
+        });
+        scrollArea.addEventListener('mouseleave', () => { isDown = false; scrollArea.style.cursor = 'grab'; });
+        scrollArea.addEventListener('mouseup', () => { isDown = false; scrollArea.style.cursor = 'grab'; });
+        scrollArea.addEventListener('mousemove', (e) => {
+            if(!isDown) return;
+            e.preventDefault();
+            const x = e.pageX - scrollArea.offsetLeft;
+            const walk = (x - startX) * 2;
+            scrollArea.scrollLeft = scrollLeft - walk;
+        });
+
+        // Initialize
+        loadUser();
+        loadTimeline();
+
+    </script>
+</body>
+</html>
